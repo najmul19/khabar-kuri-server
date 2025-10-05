@@ -19,6 +19,7 @@
     "jsonwebtoken": "^9.0.2",
     "mailgun.js": "^12.1.0",
     "mongodb": "^6.20.0",
+    "serverless-http": "^4.0.0",
     "stripe": "^19.1.0"
   },
   "devDependencies": {
