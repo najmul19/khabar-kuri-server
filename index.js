@@ -379,7 +379,7 @@ async function run() {
       if (req.params.email != req.decoded.email) {
         return res.status(403).send({ message: "forbidden access" });
       }
-      const result = await paymentCollection.find().toArray();
+      const result = await paymentCollection.find(query).toArray();
       res.send(result);
     });
     app.post("/payments", async (req, res) => {
