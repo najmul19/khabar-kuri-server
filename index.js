@@ -642,23 +642,26 @@ async function run() {
 }
 run().catch(console.dir);
 
+// routes
 app.get("/", (req, res) => {
-  res.send("nj's codeversing");
+  res.send("Khabar Kuri server is running ✅");
 });
 
 // app.listen(port, () => {
 //   console.log(`Khabar kuri boss is siitting on port ${port} `);
 // });
 
-// local dev: only listen when run directly
+// Only listen locally (not on Vercel)
 if (require.main === module) {
   app.listen(port, () => {
-    console.log(`Khabar kuri boss is sitting on port ${port}`);
+    console.log(`Khabar Kuri server running locally on port ${port}`);
   });
 }
 
-// export app for Vercel
+// export for Vercel
 module.exports = app;
+module.exports.handler = serverless(app);
+
 
 
 /**
