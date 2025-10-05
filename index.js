@@ -5,7 +5,7 @@ const cors = require("cors");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 var jwt = require("jsonwebtoken"); //5/14/2025
 // require('crypto').randomBytes(64).toString('hex')
-const serverless = require("serverless-http");
+// const serverless = require("serverless-http");
 
 // email
 const formData = require("form-data");
@@ -27,14 +27,6 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.zof5niq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
-// const client = new MongoClient(uri, {
-//   serverApi: {
-//     version: ServerApiVersion.v1,
-//     strict: true,
-//     deprecationErrors: true,
-//   },
-// });
-
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -43,18 +35,13 @@ const client = new MongoClient(uri, {
   },
 });
 
-// cache connection (global for serverless re-use)
-if (!global._mongoClientPromise) {
-  global._mongoClientPromise = client.connect();
-}
-
 //new
 
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
-    await global._mongoClientPromise;
+    // await global._mongoClientPromise;
 
     // connection
     const userCollection = client.db("KhabarKuriDb").collection("users");
@@ -631,10 +618,10 @@ async function run() {
     });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+    // await client.db("admin").command({ ping: 1 });
+    // console.log(
+    //   "Pinged your deployment. You successfully connected to MongoDB!"
+    // );
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
@@ -642,27 +629,15 @@ async function run() {
 }
 run().catch(console.dir);
 
-// routes
+// Sample route
 app.get("/", (req, res) => {
-  res.send("Khabar Kuri server is running ✅");
+  res.send("Khabar Kuri server is running");
 });
 
-// app.listen(port, () => {
-//   console.log(`Khabar kuri boss is siitting on port ${port} `);
-// });
-
-// Only listen locally (not on Vercel)
-if (require.main === module) {
-  app.listen(port, () => {
-    console.log(`Khabar Kuri server running locally on port ${port}`);
-  });
-}
-
-// export for Vercel
-module.exports = app;
-module.exports.handler = serverless(app);
-
-
+// Start the server
+app.listen(port, () => {
+  console.log(`Server is listening on port ${port}`);
+});
 
 /**
  * .......................................
