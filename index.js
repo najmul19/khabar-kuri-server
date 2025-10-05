@@ -5,6 +5,7 @@ const cors = require("cors");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 var jwt = require("jsonwebtoken"); //5/14/2025
 // require('crypto').randomBytes(64).toString('hex')
+const serverless = require("serverless-http");
 
 // email
 const formData = require("form-data");
@@ -26,6 +27,14 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.zof5niq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
+// const client = new MongoClient(uri, {
+//   serverApi: {
+//     version: ServerApiVersion.v1,
+//     strict: true,
+//     deprecationErrors: true,
+//   },
+// });
+
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -34,12 +43,18 @@ const client = new MongoClient(uri, {
   },
 });
 
+// cache connection (global for serverless re-use)
+if (!global._mongoClientPromise) {
+  global._mongoClientPromise = client.connect();
+}
+
 //new
 
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
+    await global._mongoClientPromise;
 
     // connection
     const userCollection = client.db("KhabarKuriDb").collection("users");
@@ -631,9 +646,20 @@ app.get("/", (req, res) => {
   res.send("nj's codeversing");
 });
 
-app.listen(port, () => {
-  console.log(`Khabar kuri boss is siitting on port ${port} `);
-});
+// app.listen(port, () => {
+//   console.log(`Khabar kuri boss is siitting on port ${port} `);
+// });
+
+// local dev: only listen when run directly
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`Khabar kuri boss is sitting on port ${port}`);
+  });
+}
+
+// export app for Vercel
+module.exports = app;
+
 
 /**
  * .......................................
